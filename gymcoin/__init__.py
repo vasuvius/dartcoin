@@ -9,7 +9,9 @@ from flask_login import LoginManager
 # Instantiate our Node
 app = Flask(__name__);
 
-#app.config['SECRET_KEY'] = 'Moe Lester wants to talk to you for a Titty Attack';
+#DOWNSIDE TO SQLITE: no concurrent requests
+#limited space
+# Shold probalby switch this to firebase
 app.config['SECRET_KEY'] = 'Secrety Key for Web';
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db';
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False;
@@ -18,6 +20,7 @@ bcrypt = Bcrypt(app);
 loginManager = LoginManager(app);
 loginManager.login_view = 'login';
 loginManager.login_message_category = 'info';
+
 # Generate a globally unique address for this node
 node_identifier = str(uuid4()).replace('-', '');
 

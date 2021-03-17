@@ -49,6 +49,10 @@ class Blockchain (object):
 
 		return False;
 
+#mines ALL pending transactions -> otherwise you could mine your own payment?
+# what if instead you mined a random transaction, not all, then had a cooldown 
+# prevents one person from getting all transactions
+# 
 	def minePendingTransactions(self, miner):
 		
 		lenPT = len(self.pendingTransactions);
