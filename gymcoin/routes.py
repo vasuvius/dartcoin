@@ -11,13 +11,17 @@ import requests
 @app.route("/home")
 def home():
     blockchainObj.resolveConflicts();
+    #instead, render a template that explains the blockchain and what it does
     return render_template('blockchain.html', title = "Blockchain", blockchain = blockchainObj);
 
 
 @app.route("/blockchain")
 def blockchain():
+    #this is the screen that displays the blockchain!
     #print(type(blockchainObj.chain));
     blockchainObj.resolveConflicts();
+    #blockchain is the blockchain object passed into the function
+    print(blockchainObj);
     return render_template('blockchain.html', title = "Blockchain", blockchain = blockchainObj);
 
 @app.route("/transaction", methods=['GET', 'POST'])
@@ -27,10 +31,12 @@ def transaction():
     #print(form.sender.data, form.reciever.data, form.amount.data, form.key.data);
     #print("hi");
     if form.validate_on_submit():
-        print("hi");
-        #print(form.sender.data, form.reciever.data, form.amount.data, form.key.data);
-        #print(type(form.key.data));
+        #can use the feedback form to send information to the database!
         feedback = blockchainObj.addTransaction(form.sender.data, form.reciever.data, form.amount.data, form.key.data, form.key.data);
+        # user = User(name=form.name.data, username=form.username.data, email=form.email.data, password=hashed_password, key = keyGen);
+        # db.session.add(user);
+        # db.session.commit();
+        #blkchain = BLock(sender = form.sender.data, reciever=form.reciever.data, amount=form.amount.data, key=form.key.data, )
         if feedback:
             flash(f'Transaction Made!', 'success');
         else:
@@ -74,11 +80,12 @@ def register():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
+        #how information can be 
         user = User.query.filter_by(email=form.email.data).first();
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data);
             nextPage = request.args.get('next');
-            flash(f'Welcome! You are now logged in', 'success');
+            flash(f'Welcome @{user.username}! You are now logged in', 'success'); #access informatino on a user through user stored in sqlite
             return redirect(nextPage) if nextPage else redirect(url_for('home'));
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger');
