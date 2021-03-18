@@ -17,7 +17,7 @@ class Blockchain (object):
 		self.chain = [self.addGenesisBlock()];
 		self.pendingTransactions = [];
 		self.difficulty = 2;
-		self.minerRewards = 50;
+		self.minerRewards = 5; #doesn't need to 
 		self.blockSize = 10;
 		self.nodes = set();
 
