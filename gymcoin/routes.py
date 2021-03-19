@@ -12,7 +12,7 @@ import requests
 def home():
     blockchainObj.resolveConflicts();
     #instead, render a template that explains the blockchain and what it does
-    return render_template('blockchain.html', title = "Blockchain", blockchain = blockchainObj);
+    return render_template('home.html', title = "Blockchain", blockchain = blockchainObj);
 
 
 @app.route("/blockchain")
