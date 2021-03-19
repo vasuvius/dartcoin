@@ -10,17 +10,21 @@ from Crypto.Signature import *
 from time import time
 from datetime import datetime
 import requests
+# from gymcoin import db
+
 
 
 class Blockchain (object):
 	def __init__(self):
 		self.chain = [self.addGenesisBlock()];
-		self.pendingTransactions = [];
+		self.pendingTransactions = []; #-> LIST OF VERIFIED TRANSACTION OBJETS
 		self.difficulty = 2;
 		self.minerRewards = 5; #doesn't need to 
 		self.blockSize = 10;
 		self.nodes = set();
 
+
+	#this method is used by nothing, don't bother with it
 	def register_node(self, address):
 		parsedUrl = urlparse(address)
 		self.nodes.add(parsedUrl.netloc)
@@ -94,6 +98,12 @@ class Blockchain (object):
 			print("transaction error 1");
 			return False;
 
+		#first, check that the balance of the sender is more than the AMT
+		if (self.getBalance(sender)) - amt < 0:
+			print("less than 0");
+			return False
+		
+
 		transaction = Transaction(sender, reciever, amt);
 
 		transaction.signTransaction(key, senderKey);
@@ -102,6 +112,8 @@ class Blockchain (object):
 			print("transaction error 2");
 			return False;
 		self.pendingTransactions.append(transaction);
+		#after the transaction is approved and pending, take away the value from the account!
+
 		return len(self.chain) + 1;
 
 	def getLastBlock(self):
@@ -199,11 +211,15 @@ class Blockchain (object):
 			chain.append(block);
 		return chain;
 		
+	# This isn't actually the balance itself -> its the accrued balance based on the blockchain values
+	# to prevent overflow, make an estimated value every time a transaction is made and BEFORE it is accepted
+	# add pending transactions to this as well!
 	def getBalance(self, person):
-		balance = 0; 
+		balance = 0;
 		for i in range(1, len(self.chain)):
 			block = self.chain[i];
 			try:
+				#try and find all validated transactions on the block to get balance
 				for j in range(0, len(block.transactions)):
 					transaction = block.transactions[j];
 					if(transaction.sender == person):
@@ -212,8 +228,14 @@ class Blockchain (object):
 						balance += transaction.amt;
 			except AttributeError:
 				print("no transaction")
-		return balance + 100;
-
+		for transaction in self.pendingTransactions:
+			#iterate through verified transaction objects
+			# transactions has sender, receiver, amt
+			# only register negatives -> that way rewards are waited on
+			if(transaction.sender == person):
+				balance -= transaction.amt;
+			
+		return balance + 100 #actual balance + starting amount
 
 class Block (object):
 	def __init__(self, transactions, time, index):

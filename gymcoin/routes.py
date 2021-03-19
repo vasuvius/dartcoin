@@ -32,6 +32,7 @@ def transaction():
     #print("hi");
     if form.validate_on_submit():
         #can use the feedback form to send information to the database!
+        #send balance information to blockchain object
         feedback = blockchainObj.addTransaction(form.sender.data, form.reciever.data, form.amount.data, form.key.data, form.key.data);
         # user = User(name=form.name.data, username=form.username.data, email=form.email.data, password=hashed_password, key = keyGen);
         # db.session.add(user);
@@ -124,6 +125,8 @@ def mine():
   
 @app.route('/transactions/new', methods=['POST'])
 def new_transaction():
+    #posts values to the blockchain object
+
     values = request.get_json();
     required = ['sender', 'reciever', 'amt']
     if not all(k in values for k in required):
